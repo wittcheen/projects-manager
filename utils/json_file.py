@@ -1,5 +1,5 @@
 import json
-from models.session import Session
+from modules.session import Session
 from io import BytesIO
 
 class JSONHandler:
