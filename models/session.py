@@ -50,13 +50,19 @@ class Session:
     def download_file(self, remote_path: str) -> BytesIO:
         """ Download a file from the FTP server. """
         self._ensure_connection()
-        _memory_file = BytesIO()
-        self.ftp.retrbinary(f"RETR {remote_path}", _memory_file.write)
-        _memory_file.seek(0)
-        return _memory_file
+        try:
+            _memory_file = BytesIO()
+            self.ftp.retrbinary(f"RETR {remote_path}", _memory_file.write)
+            _memory_file.seek(0)
+            return _memory_file
+        except Exception as e:
+            raise FileNotFoundError(f"Failed to download file: {e}")
 
     def upload_file(self, remote_path: str, file_obj: BytesIO):
         """ Upload a file to the FTP server. """
         self._ensure_connection()
-        file_obj.seek(0)
-        self.ftp.storbinary(f"STOR {remote_path}", file_obj)
+        try:
+            file_obj.seek(0)
+            self.ftp.storbinary(f"STOR {remote_path}", file_obj)
+        except Exception as e:
+            raise IOError(f"Failed to upload file: {e}")
