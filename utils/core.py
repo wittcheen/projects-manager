@@ -21,11 +21,3 @@ class Core:
         _center = self.app.primaryScreen().availableGeometry().center()
         _geometry.moveCenter(_center)
         self.window.move(_geometry.topLeft())
-
-
-class Error:
-    """ Base class for errors. """
-    class Unexpected(Exception): pass
-    class ServerUnreachable(Exception): pass
-    class MissingCredentials(Exception): pass
-    class InvalidCredentials(Exception): pass

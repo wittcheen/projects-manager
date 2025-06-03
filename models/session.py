@@ -1,6 +1,5 @@
 from dataclasses import dataclass, asdict
 from ftplib import FTP, error_perm, all_errors
-from utils.core import Error
 from io import BytesIO
 
 @dataclass
@@ -20,17 +19,17 @@ class Session:
     def connect(self):
         """ Attempt to connect to the FTP server using stored credentials. """
         if any(v.strip() == "" for v in self.to_dict().values()):
-            raise Error.MissingCredentials("Missing required credential(s).")
+            raise ValueError("Missing required credential(s).")
         try:
             self.ftp = FTP(self.host)
             self.ftp.login(self.username, self.password)
             return self
         except error_perm:
-            raise Error.InvalidCredentials("Invalid credentials")
+            raise PermissionError("Invalid credentials")
         except OSError:
-            raise Error.ServerUnreachable("Couldn't reach the server.")
+            raise ConnectionError("Couldn't reach the server.")
         except all_errors as e:
-            raise Error.Unexpected("Unexpected error occurred.") from e
+            raise RuntimeError("Unexpected FTP error occurred.") from e
 
     def _ensure_connection(self):
         """ Ensure the FTP connection is established. """
@@ -42,7 +41,7 @@ class Session:
         self._ensure_connection()
         try:
             self.ftp.quit()
-        except Exception:
+        except all_errors:
             pass
         finally:
             del self.ftp
@@ -55,8 +54,8 @@ class Session:
             self.ftp.retrbinary(f"RETR {remote_path}", _memory_file.write)
             _memory_file.seek(0)
             return _memory_file
-        except Exception as e:
-            raise FileNotFoundError(f"Failed to download file: {e}")
+        except all_errors as e:
+            raise RuntimeError(f"FTP download failed for '{remote_path}': {e}")
 
     def upload_file(self, remote_path: str, file_obj: BytesIO):
         """ Upload a file to the FTP server. """
@@ -64,5 +63,5 @@ class Session:
         try:
             file_obj.seek(0)
             self.ftp.storbinary(f"STOR {remote_path}", file_obj)
-        except Exception as e:
-            raise IOError(f"Failed to upload file: {e}")
+        except all_errors as e:
+            raise RuntimeError(f"FTP upload failed for '{remote_path}': {e}")
