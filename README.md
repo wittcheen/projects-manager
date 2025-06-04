@@ -1,5 +1,5 @@
 # Projects Manager
-Simple FTP client built to manage and update my portfolio projects.
+Simple program that uses FTP to update and manage my portfolio projects.
 
 <br/>
 
