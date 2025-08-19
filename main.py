@@ -1,4 +1,4 @@
-import sys
+from utils.core import Core
 from PySide6.QtWidgets import (
     QApplication, QMainWindow, QWidget
 )
@@ -14,7 +14,4 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(QWidget())
 
 if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    window = MainWindow()
-    window.show()
-    sys.exit(app.exec())
+    Core(MainWindow).run()
