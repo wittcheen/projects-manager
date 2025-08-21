@@ -1,3 +1,4 @@
+from utils.core import bold_font
 from utils.session import FTPSession
 from PySide6.QtWidgets import (
     QWidget, QHBoxLayout, QLineEdit, QLabel, QPushButton, QMessageBox
@@ -23,6 +24,7 @@ class LoginPanel(QWidget):
 
         self.action_button = QPushButton("Connect", flat = True, fixedHeight = 24, minimumWidth = 110)
         self.action_button.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.action_button.setFont(bold_font())
 
         field_list = [
             ("Host:", self.host_field),
@@ -32,7 +34,7 @@ class LoginPanel(QWidget):
 
         self._fields = []
         for label, field in field_list:
-            layout.addWidget(QLabel(label))
+            layout.addWidget(QLabel(label, font = bold_font()))
             field.setValidator(validator)
             layout.addWidget(field)
             self._fields.append(field)

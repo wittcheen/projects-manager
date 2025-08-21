@@ -1,5 +1,12 @@
 import sys
 from PySide6.QtWidgets import QApplication, QMainWindow
+from PySide6.QtGui import QFont
+
+def bold_font() -> QFont:
+    """ Return bold version of default font. """
+    font = QApplication.instance().font()
+    font.setBold(True)
+    return font
 
 class Core:
     """ Core application handler. """
