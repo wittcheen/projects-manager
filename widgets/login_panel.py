@@ -1,5 +1,6 @@
 from utils.core import bold_font
 from utils.session import FTPSession
+from utils.keyvault import KeyVault
 from PySide6.QtWidgets import (
     QWidget, QHBoxLayout, QLineEdit, QLabel, QPushButton, QMessageBox
 )
@@ -38,10 +39,19 @@ class LoginPanel(QWidget):
             field.setValidator(validator)
             layout.addWidget(field)
             self._fields.append(field)
+        self._load_credentials()
 
         layout.addWidget(self.action_button)
         self.action_button.clicked.connect(self._on_connect_action)
         self.password_field.returnPressed.connect(self._on_connect_action)
+
+    def _load_credentials(self):
+        """ Load credentials from the keyvault and populate fields. """
+        self.stored_creds = KeyVault.retrieve()
+        if self.stored_creds:
+            self.host_field.setText(self.stored_creds.get("host", ""))
+            self.username_field.setText(self.stored_creds.get("username", ""))
+            self.password_field.setText(self.stored_creds.get("password", ""))
 
     def _on_connect_action(self):
         """ Handle the connect or disconnect action. """
@@ -50,6 +60,8 @@ class LoginPanel(QWidget):
             session = FTPSession(host, username, password)
             try:
                 session.connect()
+                if self.stored_creds != session.to_dict():
+                    KeyVault.store(session.to_dict())
                 self.login_clicked.emit(session)
             except Exception as e:
                 QMessageBox.warning(self, "Login Failed", str(e))
