@@ -2,6 +2,8 @@ import sys
 from PySide6.QtWidgets import QApplication, QMainWindow
 from PySide6.QtGui import QFont
 
+JSON_KEYS = [ "title", "link", "tags", "description" ]
+
 def bold_font() -> QFont:
     """ Return bold version of default font. """
     font = QApplication.instance().font()
