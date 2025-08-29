@@ -13,6 +13,7 @@ class ActionRow(QWidget):
     def __init__(self, project_list: ProjectList, parent = None):
         super().__init__(parent)
         layout = QHBoxLayout(self)
+        layout.setContentsMargins(0, 0, 0, 0)
 
         # (Button label, associated handler)
         button_list = [

@@ -38,15 +38,15 @@ class ProjectItem(QWidget):
         for key in keys:
             value = data.get(key, "")
             if key == "description":
-                widget = SingleLineTextEdit()
-                widget.setPlainText(value)
+                field = SingleLineTextEdit()
+                field.setPlainText(value)
             else:
-                widget = QLineEdit(value)
+                field = QLineEdit(value)
             layout.addWidget(QLabel(f"{key.capitalize()}:", font = bold_font()))
-            widget.setPlaceholderText(placeholder_map.get(key, ""))
-            layout.addWidget(widget)
+            field.setPlaceholderText(placeholder_map.get(key, ""))
+            layout.addWidget(field)
             layout.addSpacing(12)
-            self._fields[key] = widget
+            self._fields[key] = field
 
         layout.addStretch()
 

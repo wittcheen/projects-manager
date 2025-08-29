@@ -13,10 +13,11 @@ class MainWindow(QMainWindow):
         self.session = None
         self.setWindowTitle("Projects Manager")
         self.setMinimumSize(650, 350)
-        self.resize(1000, 600)
+        self.resize(1000, 550)
 
         self.setCentralWidget(QWidget())
         layout = QVBoxLayout(self.centralWidget())
+        layout.setSpacing(11)
 
         self.login_panel = LoginPanel()
         layout.addWidget(self.login_panel)

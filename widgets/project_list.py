@@ -11,9 +11,11 @@ class ProjectList(QWidget):
         super().__init__(parent)
         self.keys = keys
         layout = QHBoxLayout(self)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(11)
         self.current_editor = None
 
-        self.list_widget = QListWidget()
+        self.list_widget = QListWidget(fixedWidth = 266)
         self.list_widget.setDragDropMode(QListWidget.DragDropMode.InternalMove)
         self.list_widget.setSelectionMode(QListWidget.SelectionMode.SingleSelection)
         self.list_widget.setFrameShadow(QFrame.Shadow.Plain)

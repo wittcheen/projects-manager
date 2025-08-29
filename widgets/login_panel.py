@@ -17,6 +17,7 @@ class LoginPanel(QWidget):
     def __init__(self, parent = None):
         super().__init__(parent)
         layout = QHBoxLayout(self)
+        layout.setContentsMargins(0, 0, 0, 0)
         validator = QRegularExpressionValidator(QRegularExpression(ALLOWED_CHARS))
 
         self.host_field = QLineEdit(frame = False)
@@ -72,4 +73,4 @@ class LoginPanel(QWidget):
         """ Enable or disable all fields. """
         self.action_button.setText("Connect" if enabled else "Disconnect")
         for field in self._fields:
-            field.setEnabled(enabled)
+            field.setReadOnly(not enabled)
