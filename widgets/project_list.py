@@ -11,6 +11,7 @@ class ProjectList(QWidget):
         super().__init__(parent)
         self.keys = keys
         layout = QHBoxLayout(self)
+        self.current_editor = None
 
         self.list_widget = QListWidget()
         self.list_widget.setDragDropMode(QListWidget.DragDropMode.InternalMove)
@@ -18,6 +19,7 @@ class ProjectList(QWidget):
         self.list_widget.setFrameShadow(QFrame.Shadow.Plain)
         self.list_widget.setFont(bold_font())
         layout.addWidget(self.list_widget)
+        self.list_widget.currentItemChanged.connect(self._on_project_changed)
 
         editor_frame = QFrame(
             frameShape = QFrame.Shape.StyledPanel,
@@ -25,6 +27,12 @@ class ProjectList(QWidget):
         )
         self.editor_layout = QVBoxLayout(editor_frame)
         layout.addWidget(editor_frame)
+
+    def clear_editor(self):
+        """ Remove current editor widget. """
+        if self.current_editor:
+            self.current_editor.setParent(None)
+            self.current_editor = None
 
     def populate(self, projects: list):
         """ Fill list of projects. """
@@ -49,6 +57,7 @@ class ProjectList(QWidget):
         if (row := self.list_widget.currentRow()) >= 0:
             self.list_widget.takeItem(row)
             self.list_widget.clearSelection()
+            self.clear_editor()
 
     def get_json(self) -> dict:
         """ Return dict of projects. """
@@ -58,3 +67,13 @@ class ProjectList(QWidget):
             # Reorder according to self.keys
             projects.append({ key: stored.get(key, "") for key in self.keys })
         return { "projects": projects }
+
+    def _on_project_changed(self, current_item, previous_item):
+        """ Swap editor when selection changes, save old data. """
+        self.clear_editor()
+        if current_item:
+            data = current_item.data(Qt.ItemDataRole.UserRole)
+            editor = ProjectItem(data, self.keys)
+            editor.title_changed.connect(current_item.setText)
+            self.editor_layout.addWidget(editor)
+            self.current_editor = editor
