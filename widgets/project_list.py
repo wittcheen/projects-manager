@@ -60,7 +60,8 @@ class ProjectList(QWidget):
             self.clear_editor()
 
     def get_json(self) -> dict:
-        """ Return dict of projects. """
+        """ Return dict of projects, including current editor. """
+        self._apply_editor_data(self.list_widget.currentItem(), self.current_editor)
         projects = []
         for i in range(self.list_widget.count()):
             stored = self.list_widget.item(i).data(Qt.ItemDataRole.UserRole)
@@ -68,8 +69,16 @@ class ProjectList(QWidget):
             projects.append({ key: stored.get(key, "") for key in self.keys })
         return { "projects": projects }
 
+    def _apply_editor_data(self, item, editor):
+        """ Save editor data back into the item. """
+        if item and editor:
+            data = editor.get_data()
+            item.setData(Qt.ItemDataRole.UserRole, data)
+            item.setText(data.get("title", "Untitled"))
+
     def _on_project_changed(self, current_item, previous_item):
         """ Swap editor when selection changes, save old data. """
+        self._apply_editor_data(previous_item, self.current_editor)
         self.clear_editor()
         if current_item:
             data = current_item.data(Qt.ItemDataRole.UserRole)
