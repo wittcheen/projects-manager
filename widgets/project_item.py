@@ -1,17 +1,21 @@
 from utils.core import bold_font
 from PySide6.QtWidgets import (
-    QWidget, QVBoxLayout, QLineEdit, QLabel, QTextEdit
+    QWidget, QVBoxLayout, QLabel, QPlainTextEdit
 )
 from PySide6.QtGui import QTextOption, QKeyEvent
 from PySide6.QtCore import Qt, Signal
 
-class SingleLineTextEdit(QTextEdit):
-    """ Custom `QTextEdit` that blocks Enter/Return keys. """
-    def __init__(self, row: int = 3, parent = None):
+class SingleLinePlainTextEdit(QPlainTextEdit):
+    """ Custom `QPlainTextEdit` that blocks Enter/Return keys. """
+    def __init__(self, row: int = 1, parent = None):
         super().__init__(parent)
-        self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self.setWordWrapMode(QTextOption.WrapMode.WrapAtWordBoundaryOrAnywhere)
-        self.setFixedHeight(self.fontMetrics().height() * row + 12)
+        if row == 1:
+            self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+            self.setWordWrapMode(QTextOption.WrapMode.NoWrap)
+        self.setFixedHeight(self.fontMetrics().lineSpacing() * row + 6)
+        self.setViewportMargins(1, -2, 1, 0)
 
     def keyPressEvent(self, event: QKeyEvent):
         if event.key() not in (Qt.Key.Key_Return, Qt.Key.Key_Enter):
@@ -38,10 +42,10 @@ class ProjectItem(QWidget):
         for key in keys:
             value = data.get(key, "")
             if key == "description":
-                field = SingleLineTextEdit()
-                field.setPlainText(value)
+                field = SingleLinePlainTextEdit(row = 5)
             else:
-                field = QLineEdit(value)
+                field = SingleLinePlainTextEdit()
+            field.setPlainText(value)
             layout.addWidget(QLabel(f"{key.capitalize()}:", font = bold_font()))
             field.setPlaceholderText(placeholder_map.get(key, ""))
             layout.addWidget(field)
@@ -53,6 +57,5 @@ class ProjectItem(QWidget):
     def get_data(self) -> dict:
         """ Return current values from all fields. """
         return {
-            key: (widget.toPlainText() if isinstance(widget, QTextEdit) else widget.text())
-            for key, widget in self._fields.items()
+            key: field.toPlainText() for key, field in self._fields.items()
         }
